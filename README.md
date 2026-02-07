@@ -6,7 +6,7 @@ VANTAGE is a high-performance, responsive monitoring tool designed to expose cor
 
 Built during a high-intensity hackathon, VANTAGE bridges the gap between corporate PR and geospatial reality. The application processes satellite metadata logs to identify land-use changes—such as deforestation or industrial expansion—and visualizes these discrepancies through a cutting-edge Glassmorphism interface.
 
-The project was completed by a team of three after a mid-hackathon pivot due to a teammate's departure, requiring a rapid redistribution of technical responsibilities.
+The project was completed by a team of three.
 
 ## Technical Stack
 
