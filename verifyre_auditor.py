@@ -35,6 +35,38 @@ SNOWFLAKE_EXPORT = "audit_manifest_export.json"
 AUDIO_BRIEFING = "agent_daily_briefing.txt"
 SOLANA_TX_LOG = "solana_transaction_queue.json"
 
+# --- THE "WIZARD OF OZ" OWNERSHIP DATABASE ---
+SECTOR_DATABASE = {
+    "SEC-999-DEMO": {
+        "owner": "Drax Biomass Inc.",
+        "timber_mark": "EM2960",
+        "coordinates": "54.2°N, 125.7°W",
+        "region": "Primary Rainforest Zone 4",
+        "permit_type": "Restricted-B"
+    },
+    "SEC-001-DEMO": {
+        "owner": "GreenGuard Forestry Ltd.",
+        "timber_mark": "GG-9000",
+        "coordinates": "55.1°N, 126.2°W",
+        "region": "Sustainable Harvest Zone A",
+        "permit_type": "unrestricted"
+    },
+    "SEC-3391": {
+        "owner": "Oceanic Transport Corp",
+        "timber_mark": "N/A",
+        "coordinates": "41.3°N, 19.8°E",
+        "region": "Marine Protected Area z7",
+        "permit_type": "No-Entry"
+    },
+    "SEC-8842": {
+        "owner": "AgriBiz MegaCorp",
+        "timber_mark": "AG-1234",
+        "coordinates": "45.0°N, 0.5°E",
+        "region": "Carbon Offset Block C",
+        "permit_type": "Conservation-Only"
+    }
+}
+
 # --- GRAD-CAM ENGINE (The "Heatmap" Logic) ---
 class HeatmapGenerator:
     def __init__(self, model):
@@ -82,32 +114,35 @@ class HeatmapGenerator:
         return heatmap.numpy()
 
 # --- AUDIT LOGIC KERNEL (Advanced) ---
-def apply_audit_rules(claim, prediction, confidence):
+def apply_audit_rules(claim, prediction, confidence, sector_info=None):
     """
     Advanced business logic for Verifyre ESG Audit.
     Mocks "Dark Vessel" and "Machinery" detection based on class contradictions.
+    Includes "Blame Logic" to specifically name shamed companies.
     """
     risk_level = "LOW"
     action_token = "SOL-MINT"
     msg = "VERIFIED: Land use matches reported manifest."
+    
+    owner_str = f" ({sector_info['owner']})" if sector_info and 'owner' in sector_info else ""
 
     # Scenario A: The "Dark Vessel" (Industrial activity in Water/Nature zones)
     # EuroSAT 'Industrial' or 'Highway' inside 'SeaLake' or 'River'
     if claim in ["SeaLake", "River"] and prediction in ["Industrial"]:
-         return "CRITICAL: 'Dark Vessel' Signature Detected (AIS Off)", "CRITICAL", "SOL-SLASH"
+         return f"CRITICAL: 'Dark Vessel'{owner_str} Signature Detected (AIS Off)", "CRITICAL", "SOL-SLASH"
 
     # Scenario B: Heavy Machinery in Protected Rainforest
     # Claiming Forest, but finding Industrial/Highway
     if claim == "Forest" and prediction in ["Industrial", "Highway"]:
-        return "CRITICAL: Heavy Machinery / Illegal Logging Road", "CRITICAL", "SOL-SLASH"
+        return f"CRITICAL: Heavy Machinery / Illegal Logging by{owner_str}", "CRITICAL", "SOL-SLASH"
 
     # Scenario C: Carbon Fraud
     if claim == "Forest" and prediction in ["AnnualCrop", "PermanentCrop", "Pasture"]:
-        return "FRAUD: Illicit Agriculture in Carbon Credit Zone", "HIGH", "SOL-BURN"
+        return f"FRAUD: Iliicit Agriculture{owner_str} in Carbon Credit Zone", "HIGH", "SOL-BURN"
 
     # Scenario D: Urban Sprawl (Habitat Destruction)
     if claim in ["HerbaceousVegetation", "Pasture"] and prediction == "Residential":
-        return "WARNING: Unreported Urban Encroachment", "MEDIUM", "SOL-FLAG"
+        return f"WARNING: Unreported Urban Encroachment{owner_str}", "MEDIUM", "SOL-FLAG"
 
     # Scenario E: Clean
     if claim == prediction:
@@ -135,7 +170,9 @@ def save_evidence_heatmap(image_tensor, heatmap, filename="evidence_locker/heatm
     # Heatmap Overlay
     plt.subplot(1, 2, 2)
     plt.imshow(img)
-    plt.imshow(heatmap, cmap='jet', alpha=0.5, extent=[0, 224, 224, 0]) 
+    # User requested "smaller pixels" -> smoother interpolation (bicubic)
+    # User requested "bare ground red" (it was blue) -> Invert colormap (jet_r) to highlight the "cold" spots of the original map
+    plt.imshow(heatmap, cmap='jet_r', alpha=0.6, extent=[0, 224, 224, 0], interpolation='bicubic') 
     plt.title("AI Attention Map (Anomaly)")
     plt.axis('off')
     
@@ -277,8 +314,21 @@ def audit_single_image(image_path, claimed_label):
     heatmap = cam_generator.generate(predicted_idx.item())
     cam_generator.remove_hooks()
     
+    # --- INTELLIGENT LOOKUP (Simulating DB connection based on filename) ---
+    sector_id = "SEC-UNKNOWN"
+    sector_info = {"owner": "Unknown Entity", "coordinates": "Unknown", "region": "Unmapped"}
+    
+    fname = os.path.basename(image_path)
+    if "sector-4" in fname:
+        sector_id = "SEC-999-DEMO" # Drax
+    elif "sector-1" in fname:
+        sector_id = "SEC-001-DEMO" # Clean
+    
+    if sector_id in SECTOR_DATABASE:
+        sector_info = SECTOR_DATABASE[sector_id]
+    
     # Logic
-    status_msg, risk_level, token = apply_audit_rules(claimed_label, predicted_class, top_prob.item())
+    status_msg, risk_level, token = apply_audit_rules(claimed_label, predicted_class, top_prob.item(), sector_info)
     
     # Heatmap Saving
     evidence_path = save_evidence_heatmap(image_tensor, heatmap)
@@ -286,7 +336,9 @@ def audit_single_image(image_path, claimed_label):
     # Display
     table = Table(title="TARGETED AUDIT RESULT", box=box.HEAVY_EDGE, border_style="bright_magenta")
     table.add_column("Target", style="cyan")
-    table.add_column("Claimed", style="magenta")
+    table.add_column("Owner", style="magenta")
+    table.add_column("Coordinates", style="dim")
+    table.add_column("Claimed", style="white")
     table.add_column("AI Prediction", style="yellow")
     table.add_column("Confidence", justify="right")
     table.add_column("Risk Level", justify="center")
@@ -299,6 +351,8 @@ def audit_single_image(image_path, claimed_label):
 
     table.add_row(
         os.path.basename(image_path),
+        sector_info["owner"],
+        sector_info["coordinates"],
         claimed_label,
         predicted_class,
         f"{top_prob.item():.2%}",
@@ -311,11 +365,13 @@ def audit_single_image(image_path, claimed_label):
     
     # Generate Integration Files
     generate_integration_files([{
-        "id": "SINGLE_TARGET", 
+        "id": sector_id, 
         "claim": claimed_label, 
         "prediction": predicted_class, 
         "risk": risk_level, 
-        "token": token
+        "token": token,
+        "owner": sector_info["owner"],
+        "coordinates": sector_info["coordinates"]
     }])
 
 
@@ -350,28 +406,28 @@ def get_fraud_probability(sector_id, claim, image_path=None):
     """
     model = load_auditor_model()
     
+    # Lookup Sector Info
+    sector_info = SECTOR_DATABASE.get(sector_id, {})
+
     # If no image provided, pick a random one from dataset to simulate 'real-time feed'
     if not image_path:
-        dataset = get_dataset()
-        if not dataset:
-            return {"error": "Dataset unavailable"}
-        idx = random.randint(0, len(dataset)-1)
-        image_tensor, label_idx = dataset[idx]
-        true_label = EUROSAT_CLASSES[label_idx]
-        
-        # Save this image temporarily so we can map it? Or just use the tensor.
-        # For simplicity in API, we proceed with tensor. 
-        # But we need the path for display? 
-        # Let's find the actual path if possible, or just generate heatmap from tensor.
-        # Since 'dataset' from torchvision doesn't easily give paths, 
-        # we will grab a file from disk manually if we want to point to it.
-        # Strategy: Pick a random file from disk.
-        root_dir = "data/eurosat/2750"
-        all_classes = os.listdir(root_dir)
-        random_class = random.choice(all_classes)
-        class_dir = os.path.join(root_dir, random_class)
-        random_file = random.choice(os.listdir(class_dir))
-        image_path = os.path.join(class_dir, random_file)
+        # Code omitted for brevity, logic remains same: pick random image
+        # ...
+        try:
+           dataset = get_dataset()
+           if not dataset: return {"error": "Dataset unavailable"}
+           
+           # If random choice logic:
+           root_dir = "data/eurosat/2750"
+           if not os.path.exists(root_dir): return {"error": "Data dir missing"}
+           
+           all_classes = os.listdir(root_dir)
+           random_class = random.choice(all_classes)
+           class_dir = os.path.join(root_dir, random_class)
+           random_file = random.choice(os.listdir(class_dir))
+           image_path = os.path.join(class_dir, random_file)
+        except Exception as e:
+            return {"error": f"Image selection failed: {e}"}
 
     # Setup Grad-CAM
     cam_generator = HeatmapGenerator(model)
@@ -403,15 +459,15 @@ def get_fraud_probability(sector_id, claim, image_path=None):
     heatmap = cam_generator.generate(predicted_idx.item())
     cam_generator.remove_hooks()
     
-    # Logic
-    status_msg, risk_level, token = apply_audit_rules(claim, predicted_class, top_prob.item())
+    # Logic with Sector Info
+    status_msg, risk_level, token = apply_audit_rules(claim, predicted_class, top_prob.item(), sector_info)
     
     # Save Heatmap for API to serve
     filename = f"static/heatmaps/{sector_id}_heatmap.jpg"
     os.makedirs("static/heatmaps", exist_ok=True)
     save_evidence_heatmap(image_tensor, heatmap, filename=filename)
     
-    return {
+    result = {
         "sector_id": sector_id,
         "claim": claim,
         "prediction": predicted_class,
@@ -419,9 +475,15 @@ def get_fraud_probability(sector_id, claim, image_path=None):
         "risk_level": risk_level,
         "status_message": status_msg,
         "action_token": token,
-        "heatmap_url": f"http://localhost:8000/{filename}", # Assumes default port
+        "heatmap_url": f"http://localhost:8000/{filename}",
         "timestamp": "2026-02-07T12:00:00Z"
     }
+    
+    # Merge DB info directly into result for frontend display
+    if sector_info:
+        result.update(sector_info)
+        
+    return result
 
 # --- SIMULATION ---
 def simulate_audit_batch(n=10):

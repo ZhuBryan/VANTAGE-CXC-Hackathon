@@ -2,11 +2,13 @@
     "audit_session": "SESSION_ID_X99",
     "results": [
         {
-            "id": "SINGLE_TARGET",
+            "id": "SEC-001-DEMO",
             "claim": "Forest",
-            "prediction": "Forest",
-            "risk": "LOW",
-            "token": "SOL-MINT"
+            "prediction": "SeaLake",
+            "risk": "UNKNOWN",
+            "token": "SOL-HOLD",
+            "owner": "GreenGuard Forestry Ltd.",
+            "coordinates": "55.1\u00b0N, 126.2\u00b0W"
         }
     ],
     "metadata": {
