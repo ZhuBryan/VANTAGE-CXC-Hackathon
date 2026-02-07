@@ -7,12 +7,13 @@ import os
 import shutil
 
 # Import the Vision Logic
-try:
-    from verifyre_auditor import get_fraud_probability
-except ImportError:
-    # Fail-safe / Simulation if model is missing during raw API test
-    print("WARNING: Could not import vision engine. Running in MOCK mode.")
-    get_fraud_probability = None
+from verifyre_auditor import get_fraud_probability
+# try:
+#     from verifyre_auditor import get_fraud_probability
+# except ImportError:
+#     # Fail-safe / Simulation if model is missing during raw API test
+#     print("WARNING: Could not import vision engine. Running in MOCK mode.")
+#     get_fraud_probability = None
 
 app = FastAPI(title="Verifyre Satellite Audit API", version="1.0")
 
@@ -66,47 +67,38 @@ def trigger_audit(request: AuditRequest):
 @app.post("/demo/{scenario}")
 def demo_scenario(scenario: str):
     """
-    Hardcoded Demo Scenarios for Hackathon Presentation.
+    Live Demo Scenarios.
+    Runs the REAL computer vision model on the specific 'Drax' or 'Clean' images.
     """
-    base_url = "http://localhost:8000/static/heatmaps"
-    
+    # 1. FRAUD SCENARIO (Drax Biomass)
     if scenario == "fraud":
-        # Simulate: Claiming "Forest", but finding "Industrial" (Illegal Logging/Factory)
-        return {
-            "sector_id": "SEC-999-DEMO",
-            "claim": "Forest",
-            "prediction": "Industrial",
-            "confidence": 0.98,
-            "risk_level": "CRITICAL",
-            "status_message": "CRITICAL: Heavy Machinery / Illegal Logging by (Drax Biomass Inc.)",
-            "action_token": "SOL-SLASH",
-            "heatmap_url": f"{base_url}/demo_fraud.jpg", 
-            "timestamp": "2026-02-07T14:00:00Z",
-            "owner": "Drax Biomass Inc.",
-            "timber_mark": "EM2960",
-            "coordinates": "54.2°N, 125.7°W",
-            "region": "Primary Rainforest Zone 4",
-            "permit_type": "Restricted-B"
-        }
+        # Target: The controversial photo
+        target_image = "static/sector-4_view.jpg" 
+        
+        # If image missing, ensure we don't crash (though it should exist)
+        if not os.path.exists(target_image):
+            return {"error": f"Demo asset missing: {target_image}"}
+
+        # CALL THE MODEL LIVE
+        return get_fraud_probability(
+            sector_id="SEC-999-DEMO", 
+            claim="Forest", 
+            image_path=target_image
+        )
     
+    # 2. CLEAN SCENARIO (GreenGuard)
     elif scenario == "clean":
-        # Simulate: Verified Forest
-        return {
-            "sector_id": "SEC-001-DEMO",
-            "claim": "Forest",
-            "prediction": "Forest",
-            "confidence": 0.99,
-            "risk_level": "LOW",
-            "status_message": "VERIFIED: Forest confirmed (99.0%)",
-            "action_token": "SOL-MINT",
-            "heatmap_url": f"{base_url}/demo_clean.jpg",
-            "timestamp": "2026-02-07T14:05:00Z",
-            "owner": "GreenGuard Forestry Ltd.",
-            "timber_mark": "GG-9000",
-            "coordinates": "55.1°N, 126.2°W",
-            "region": "Sustainable Harvest Zone A",
-            "permit_type": "Unrestricted"
-        }
+        target_image = "static/sector-1_view.jpg"
+        
+        if not os.path.exists(target_image):
+            return {"error": f"Demo asset missing: {target_image}"}
+
+        # CALL THE MODEL LIVE
+        return get_fraud_probability(
+            sector_id="SEC-001-DEMO", 
+            claim="Forest", 
+            image_path=target_image
+        )
         
     else:
         raise HTTPException(status_code=404, detail="Scenario unknown. Use 'fraud' or 'clean'.")
