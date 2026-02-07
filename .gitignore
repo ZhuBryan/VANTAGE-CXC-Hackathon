@@ -1,3 +1,5 @@
+#Frontend
+
 # Environments
 .venv/
 .venv-vantage/
@@ -36,5 +38,30 @@ data/
 *.pth
 
 # OS
+.DS_Store
+Thumbs.db
+
+
+# Backend & Database
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+venv/
+.venv/
+
+# Reflex
+.web/
+assets/
+
+# Snowflake / Data
+*.csv
+*.pdf
+*.json
+.snowflake/
+
+# System
 .DS_Store
 Thumbs.db
