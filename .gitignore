@@ -1,67 +1,47 @@
-#Frontend
-
-# Environments
+# === Environments & Dependencies ===
 .venv/
 .venv-vantage/
 env/
 venv/
-  
+node_modules/
 
-# Reflex specific
+# === Reflex / Next.js Framework (Member 3) ===
 .web/
-__pycache__/
-*.db
-
-# Data & Keys
-.env
-data/
-.DS_Store
-
-# Computer Vision
-# Python
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
 
-# Dataset
-data/
-
-# Model Weights (large files)
+# === Visual Intelligence (Member 1: Vision/Audio) ===
+# Large Satellite tiles and Earth Engine local cache
+*.tif
+*.tiff
+.ee_cache/
+# PyTorch Model weights and training checkpoints
 *.pth
+*.pt
+*.ckpt
+# Generated Audio files (ElevenLabs/Gemini)
+*.mp3
+*.wav
 
-# OS
-.DS_Store
-Thumbs.db
-
-
-# Backend & Database
-
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-.env
-venv/
-.venv/
-
-# Reflex
-.web/
-assets/
-
-# Snowflake / Data
+# === Data & Governance (Member 2: Snowflake/Cortex) ===
+# Data files that should stay in Snowflake, not GitHub
 *.csv
-*.pdf
 *.json
+*.pdf
+*.xlsx
+# Snowflake CLI and SQL logs
 .snowflake/
+*.log
+queries.sql.bak
 
-# System
+# === Secrets & Config ===
+.env
+.env.*
+secrets.toml
+access_token.txt
+
+# === System & OS ===
 .DS_Store
 Thumbs.db
