@@ -3,6 +3,7 @@
 .venv-vantage/
 env/
 venv/
+  
 
 # Reflex specific
 .web/
@@ -13,3 +14,27 @@ __pycache__/
 .env
 data/
 .DS_Store
+
+# Computer Vision
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Dataset
+data/
+
+# Model Weights (large files)
+*.pth
+
+# OS
+.DS_Store
+Thumbs.db
