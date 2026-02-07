@@ -1,3 +1,7 @@
+assets/external/
+*.py[cod]
+.states
+.web
 # Environments
 .venv/
 .venv-vantage/
