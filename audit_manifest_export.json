@@ -1,0 +1,16 @@
+{
+    "audit_session": "SESSION_ID_X99",
+    "results": [
+        {
+            "id": "SINGLE_TARGET",
+            "claim": "Forest",
+            "prediction": "Forest",
+            "risk": "LOW",
+            "token": "SOL-MINT"
+        }
+    ],
+    "metadata": {
+        "source": "EuroSAT V2",
+        "auditor": "Verifyre-AI"
+    }
+}
