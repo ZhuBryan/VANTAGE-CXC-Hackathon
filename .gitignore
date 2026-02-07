@@ -1,0 +1,15 @@
+# Environments
+.venv/
+.venv-vantage/
+env/
+venv/
+
+# Reflex specific
+.web/
+__pycache__/
+*.db
+
+# Data & Keys
+.env
+data/
+.DS_Store
