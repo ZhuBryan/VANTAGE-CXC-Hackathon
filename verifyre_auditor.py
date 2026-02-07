@@ -146,20 +146,24 @@ def apply_audit_rules(claim, prediction, confidence, sector_info=None):
     return f"MISMATCH: {prediction} detected (Claim: {claim}){conf_str}", "HIGH", "SOL-HOLD"
 
 # --- VISUALIZATION ---
-def save_evidence_heatmap(image_tensor, heatmap, filename="evidence_locker/heatmap_evidence.jpg"):
+def save_evidence_heatmap(image_tensor, heatmap, filename="evidence_locker/heatmap_evidence.jpg", is_risk=True):
     os.makedirs("evidence_locker", exist_ok=True)
     img = image_tensor.squeeze().permute(1, 2, 0).cpu().numpy()
     img = img * np.array([0.229, 0.224, 0.225]) + np.array([0.485, 0.456, 0.406])
     img = np.clip(img, 0, 1)
 
+    # Dynamic Color Logic
+    # Risk (Deforestation) = JET (Red=High)
+    # Safe (Forest) = WINTER (Green/Blue=High) or just standard BLUE
+    cmap_choice = 'jet' if is_risk else 'GnBu' 
+
     plt.figure(figsize=(10, 4))
     plt.subplot(1, 2, 1); plt.imshow(img); plt.title("Satellite Feed"); plt.axis('off')
     plt.subplot(1, 2, 2)
     plt.imshow(img)
-    # Highlight anomalies in RED (jet = Blue to Red)
-    # We use 'jet' so that Low(0)=Blue (Cold) and High(1)=Red (Hot/Anomalous)
-    plt.imshow(heatmap, cmap='jet', alpha=0.35, extent=[0, 224, 224, 0], interpolation='bicubic') 
-    plt.title(f"Deforestation Risk Map")
+    
+    plt.imshow(heatmap, cmap=cmap_choice, alpha=0.4, extent=[0, 224, 224, 0], interpolation='bicubic') 
+    plt.title(f"{'Risk' if is_risk else 'Verification'} Map")
     plt.axis('off')
     plt.tight_layout()
     plt.savefig(filename)
@@ -344,18 +348,23 @@ def get_fraud_probability(sector_id, claim, image_path=None):
         heatmap = cam.generate(predicted_idx.item())
         cam.remove_hooks()
         
+        # Lookup DB Info
+        sector_info = SECTOR_DATABASE.get(sector_id, SECTOR_DATABASE.get("SEC-999-DEMO"))
+        
+        # Apply Rules (Determine if it's a LIE)
+        status_msg, risk_level, token = apply_audit_rules(claim, predicted_class, top_prob.item(), sector_info)
+
+        # Generate Heatmap Color based on RISK LEVEL (The Lie)
+        # CRITICAL/HIGH = Red (Detected Fraud)
+        # LOW = Blue/Green (Verified Truth)
+        is_risk_visualization = risk_level in ["CRITICAL", "HIGH"]
+
         # Save Heatmap (ensure static/heatmaps exists)
         heatmap_filename = f"{sector_id}_heatmap.jpg"
         heatmap_path = os.path.join("static", "heatmaps", heatmap_filename)
         os.makedirs(os.path.dirname(heatmap_path), exist_ok=True)
-        
-        save_evidence_heatmap(image_tensor, heatmap, filename=heatmap_path)
-        
-        # Lookup DB Info
-        sector_info = SECTOR_DATABASE.get(sector_id, SECTOR_DATABASE.get("SEC-999-DEMO"))
-        
-        # Apply Rules
-        status_msg, risk_level, token = apply_audit_rules(claim, predicted_class, top_prob.item(), sector_info)
+
+        save_evidence_heatmap(image_tensor, heatmap, filename=heatmap_path, is_risk=is_risk_visualization)
         
         # Construct Response
         return {
