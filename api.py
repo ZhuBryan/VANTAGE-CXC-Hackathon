@@ -105,4 +105,5 @@ def demo_scenario(scenario: str):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    # Updated Port to 8001 to avoid conflict with Reflex (8000)
+    uvicorn.run(app, host="0.0.0.0", port=8001)
