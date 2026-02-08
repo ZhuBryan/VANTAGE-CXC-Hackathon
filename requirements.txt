@@ -2,10 +2,13 @@
 reflex==0.4.6
 
 # Snowflake Connector & Data Logic
-snowflake-connector-python[pandas]
-snowflake-snowpark-python
+# snowflake-connector-python[pandas]
+# snowflake-snowpark-python
 python-dotenv
 
 # AI Utilities
 google-generativeai
 pandas
+
+# HTTP Client
+httpx
