@@ -1,22 +1,23 @@
-# Python
+# Secrets and Credentials (VERY IMPORTANT)
+.env
+
+# Python Environment
 __pycache__/
 *.py[cod]
 *$py.class
-*.so
-.env
-.venv
+.venv/
 env/
 venv/
 ENV/
-env.bak/
-venv.bak/
 
-# Dataset
-data/
-
-# Model Weights (large files)
-*.pth
-
-# OS
+# OS Files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+
+# Reflex/Frontend temporary files
+.web/
