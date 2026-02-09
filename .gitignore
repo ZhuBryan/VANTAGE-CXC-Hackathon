@@ -1,4 +1,8 @@
-# === Environments & Dependencies ===
+assets/external/
+*.py[cod]
+.states
+.web
+# Environments
 .venv/
 .venv-vantage/
 env/
@@ -38,6 +42,8 @@ queries.sql.bak
 
 # === Secrets & Config ===
 .env
+data/
+.DS_Store
 .env.*
 secrets.toml
 access_token.txt
