@@ -1,2 +1,14 @@
+# Web Framework
+reflex==0.4.6
 
-reflex==0.8.26
+# Snowflake Connector & Data Logic
+# snowflake-connector-python[pandas]
+# snowflake-snowpark-python
+python-dotenv
+
+# AI Utilities
+google-generativeai
+pandas
+
+# HTTP Client
+httpx

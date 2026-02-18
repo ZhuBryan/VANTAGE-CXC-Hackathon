@@ -1,0 +1,57 @@
+[
+  {
+    "id": "SEC-1024",
+    "claim": "Forest",
+    "reality": "Forest",
+    "fraud_probability": 0.02,
+    "risk_level": "LOW",
+    "status": "VERIFIED",
+    "timestamp": "2026-02-07T08:30:00Z",
+    "action_token": "SOL-MINT",
+    "heatmap_url": "http://localhost:8000/static/heatmaps/sec_1024.jpg"
+  },
+  {
+    "id": "SEC-8842",
+    "claim": "Forest",
+    "reality": "AnnualCrop",
+    "fraud_probability": 0.95,
+    "risk_level": "HIGH",
+    "status": "FRAUD: Illicit Agriculture",
+    "timestamp": "2026-02-07T09:15:00Z",
+    "action_token": "SOL-BURN",
+    "heatmap_url": "http://localhost:8000/static/heatmaps/sec_8842.jpg"
+  },
+  {
+    "id": "SEC-3391",
+    "claim": "River",
+    "reality": "Industrial",
+    "fraud_probability": 0.99,
+    "risk_level": "CRITICAL",
+    "status": "CRITICAL: Dark Vessel Detected",
+    "timestamp": "2026-02-07T10:00:00Z",
+    "action_token": "SOL-SLASH",
+    "heatmap_url": "http://localhost:8000/static/heatmaps/sec_3391.jpg"
+  },
+  {
+    "id": "SEC-4402",
+    "claim": "HerbaceousVegetation",
+    "reality": "Pasture",
+    "fraud_probability": 0.65,
+    "risk_level": "MEDIUM",
+    "status": "WARNING: Unreported Grazing",
+    "timestamp": "2026-02-07T11:45:00Z",
+    "action_token": "SOL-FLAG",
+    "heatmap_url": "http://localhost:8000/static/heatmaps/sec_4402.jpg"
+  },
+  {
+    "id": "SEC-5501",
+    "claim": "SeaLake",
+    "reality": "SeaLake",
+    "fraud_probability": 0.01,
+    "risk_level": "LOW",
+    "status": "VERIFIED",
+    "timestamp": "2026-02-07T12:00:00Z",
+    "action_token": "SOL-MINT",
+    "heatmap_url": "http://localhost:8000/static/heatmaps/sec_5501.jpg"
+  }
+]
