@@ -21,3 +21,47 @@ Thumbs.db
 
 # Reflex/Frontend temporary files
 .web/
+node_modules/
+
+# === Reflex / Next.js Framework (Member 3) ===
+.web/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# === Visual Intelligence (Member 1: Vision/Audio) ===
+# Large Satellite tiles and Earth Engine local cache
+*.tif
+*.tiff
+.ee_cache/
+# PyTorch Model weights and training checkpoints
+*.pth
+*.pt
+*.ckpt
+# Generated Audio files (ElevenLabs/Gemini)
+*.mp3
+*.wav
+
+# === Data & Governance (Member 2: Snowflake/Cortex) ===
+# Data files that should stay in Snowflake, not GitHub
+*.csv
+*.json
+*.pdf
+*.xlsx
+# Snowflake CLI and SQL logs
+.snowflake/
+*.log
+queries.sql.bak
+
+# === Secrets & Config ===
+.env
+data/
+.DS_Store
+.env.*
+secrets.toml
+access_token.txt
+
+# === System & OS ===
+.DS_Store
+Thumbs.db
