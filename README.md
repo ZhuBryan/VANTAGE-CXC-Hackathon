@@ -31,7 +31,25 @@ VANTAGE utilizes a streamlined architecture to maintain high performance under l
 2. Computer Vision: A PyTorch backend fine-tuned to distinguish between Forest, Industrial, and River signatures using multispectral imagery.
 3. Data Warehouse: Snowflake API integration managing high-volume metadata for sub-second historical evidence retrieval.
 4. Interface: A Tailwind-powered dashboard utilizing backdrop filters, custom reactive borders, and device-specific layouts.
+   
+## Limitations and Scope
 
+### Data Availability
+* Uses publicly available satellite imagery (EuroSAT) for land-use classification.
+* Corporate land ownership metadata is not publicly accessible and is therefore not integrated into this prototype.
+* Linking predictions to specific corporate land holdings would require licensed cadastral or proprietary geospatial datasets.
+
+### Prototype Nature
+* Proof-of-concept system demonstrating satellite image classification via transfer learning.
+* Showcases asynchronous backend inference workflows and reactive geospatial dashboard rendering.
+* Includes performance benchmarking under simulated load.
+* Demo runs inference on predefined regions and simulated metadata logs rather than user-submitted coordinates.
+
+### Intended Purpose
+* Explores how satellite imagery and computer vision could support environmental compliance workflows.
+* Not a production deployment.
+* Does not claim automated regulatory enforcement or verified corporate land mapping.
+  
 ## Development and Contributions
 
 Following the team reduction, work was split among three members to ensure all core systems were delivered.
